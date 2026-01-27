@@ -1,17 +1,22 @@
 pipeline {
     agent any
-
     stages {
-        stage('Checkout') {
+        stage('Test Setup') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/mouhaned07/food-delivery.git'
+                // Force la création de l'espace de travail
+                sh 'echo "Initialisation du dossier..." '
             }
         }
-
-        stage('Build Docker Images') {
+        stage('Build Docker') {
             steps {
-                sh 'docker compose build'
+                script {
+                    // Utilise l'outil configuré dans Jenkins
+                    docker.withTool('docker') {
+                        sh 'docker --version'
+                        // Si ça marche, on tente le build
+                        // sh 'docker compose build' 
+                    }
+                }
             }
         }
     }
