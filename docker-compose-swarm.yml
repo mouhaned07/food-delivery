@@ -1,0 +1,38 @@
+services:
+  frontend:
+    image: food-delivery-frontend
+    deploy:
+      replicas: 2
+    ports:
+      - "5173:5173"
+    networks:
+      - foodapp_overlay
+
+  backend:
+    image: food-delivery-backend
+    deploy:
+      replicas: 2
+    ports:
+      - "4000:4000"
+    networks:
+      - foodapp_overlay
+
+  admin:
+    image: food-delivery-admin
+    deploy:
+      replicas: 1
+    ports:
+      - "5174:5174"
+    networks:
+      - foodapp_overlay
+
+  mongo:
+    image: mongo:latest
+    deploy:
+      replicas: 1
+    networks:
+      - foodapp_overlay
+
+networks:
+  foodapp_overlay:
+    external: true

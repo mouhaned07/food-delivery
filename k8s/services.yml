@@ -1,0 +1,55 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  namespace: foodapp
+spec:
+  selector:
+    app: mongo
+  ports:
+    - port: 27017
+      targetPort: 27017
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: foodapp
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 4000
+      targetPort: 4000
+      nodePort: 30001
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: foodapp
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 5173
+      targetPort: 5173
+      nodePort: 30002
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin
+  namespace: foodapp
+spec:
+  selector:
+    app: admin
+  ports:
+    - port: 5174
+      targetPort: 5174
+      nodePort: 30003
+  type: NodePort

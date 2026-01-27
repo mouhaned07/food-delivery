@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: foodapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: food-delivery-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 4000
+          env:
+            - name: MONGO_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: foodapp-config
+                  key: MONGO_URL
+
+            - name: JWT_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  name: foodapp-config
+                  key: JWT_SECRET
+
+            - name: SALT
+              valueFrom:
+                configMapKeyRef:
+                  name: foodapp-config
+                  key: SALT
+
+            - name: STRIPE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: foodapp-secret
+                  key: STRIPE_SECRET_KEY
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: foodapp
+spec:
+  type: NodePort
+  selector:
+    app: backend
+  ports:
+    - port: 4000
+      targetPort: 4000
+      nodePort: 30001

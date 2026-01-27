@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: foodapp-config
+  namespace: foodapp
+data:
+  MONGO_URL: mongodb://mongo:27017/fooddelivery
+  JWT_SECRET: monsecret
+  SALT: "10"
