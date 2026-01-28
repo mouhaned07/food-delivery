@@ -2,9 +2,17 @@ pipeline {
     agent any
 
     stages {
-        stage('Test') {
+        stage('Checkout') {
             steps {
-                echo 'Hello Jenkins – Pipeline OK'
+                echo 'Code récupéré depuis GitHub'
+            }
+        }
+
+        stage('Build Docker') {
+            steps {
+                sh 'docker --version'
+                sh 'docker compose version'
+                sh 'docker compose build'
             }
         }
     }
