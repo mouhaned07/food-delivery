@@ -1,42 +1,27 @@
+version: "3.9"
+
 services:
   frontend:
-    build:
-      context: ./frontend
+    build: ./frontend
     image: food-delivery-frontend
     ports:
       - "5173:5173"
-    depends_on:
-      - backend
 
   backend:
-    build:
-      context: ./backend
+    build: ./backend
     image: food-delivery-backend
     ports:
       - "4000:4000"
-    depends_on:
-      - mongo
 
   admin:
-    build:
-      context: ./admin
+    build: ./admin
     image: food-delivery-admin
     ports:
       - "5174:5174"
-    depends_on:
-      - backend
 
   mongo:
     image: mongo:latest
     ports:
       - "27017:27017"
-
-  jenkins:
-  image: jenkins/jenkins:lts
-  ports:
-    - "8081:8080"
-  volumes:
-    - jenkins_home:/var/jenkins_home
-    - /var/run/docker.sock:/var/run/docker.sock  # <--- INDISPENSABLE
 
 
