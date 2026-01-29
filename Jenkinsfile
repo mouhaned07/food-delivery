@@ -15,10 +15,9 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // On force Jenkins à chercher docker dans les dossiers système standards
-                    withEnv(['PATH+EXTRA=/usr/bin:/usr/local/bin']) {
-                        echo '🐳 Construction de l\'image...'
-                        sh 'docker build -t $IMAGE_NAME:latest .'
+                    echo '🐳 Construction de l\'image...'
+                    // Utilisation du chemin absolu /usr/bin/docker
+                    sh '/usr/bin/docker build -t $IMAGE_NAME:latest .'
                     }
                 }
             }
