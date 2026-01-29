@@ -16,10 +16,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Cette commande force Jenkins à charger l'outil 'docker' configuré
-                    docker.withTool('docker') {
-                        echo '🐳 Construction de l\'image Docker...'
-                        sh 'docker build -t mouhaned07/food-delivery:latest .'
+                    sh '/usr/bin/docker build -t mouhaned07/food-delivery:latest .'
                     }
                 }
             }
