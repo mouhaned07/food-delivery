@@ -2,41 +2,56 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "mouhaned07/food-delivery"
+        DOCKER_USER = "mouhaned07"
+        ADMIN_IMAGE    = "food-delivery-admin"
+        BACKEND_IMAGE  = "food-delivery-backend"
+        FRONTEND_IMAGE = "food-delivery-frontend"
     }
 
     stages {
+
         stage('Checkout') {
             steps {
-                echo '📥 Récupération du code...'
+                echo "📥 Récupération du code..."
                 git branch: 'main', url: 'https://github.com/mouhaned07/food-delivery.git'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Docker Images') {
             steps {
-                echo '🐳 Construction de l\'image...'
-                // Pas besoin de withTool car tu as lancé Jenkins en root avec accès au pipe Docker
-                sh 'docker build -t ${IMAGE_NAME}:latest .'
+                echo "🐳 Build des images Docker..."
+
+                sh '''
+                  docker build -t $DOCKER_USER/$ADMIN_IMAGE:latest admin
+                  docker build -t $DOCKER_USER/$BACKEND_IMAGE:latest backend
+                  docker build -t $DOCKER_USER/$FRONTEND_IMAGE:latest frontend
+                '''
             }
         }
 
-        stage('Push Docker Image') {
+        stage('Push Docker Images') {
             steps {
                 withCredentials([string(credentialsId: 'dockerhub-pass', variable: 'DOCKER_PASS')]) {
-                    echo '📤 Envoi vers Docker Hub...'
-                    sh """
-                    echo ${DOCKER_PASS} | docker login -u mouhaned07 --password-stdin
-                    docker push ${IMAGE_NAME}:latest
-                    """
+                    sh '''
+                      echo "$DOCKER_PASS" | docker login -u $DOCKER_USER --password-stdin
+
+                      docker push $DOCKER_USER/$ADMIN_IMAGE:latest
+                      docker push $DOCKER_USER/$BACKEND_IMAGE:latest
+                      docker push $DOCKER_USER/$FRONTEND_IMAGE:latest
+                    '''
                 }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                echo '🚀 Déploiement Kubernetes...'
-                sh 'kubectl apply -f k8s/ || echo "Fichiers k8s manquants"'
+                echo "🚀 Déploiement Kubernetes..."
+
+                sh '''
+                  kubectl apply -f backend-deployment.yml
+                  kubectl apply -f frontend-deployment.yml
+                  kubectl apply -f admin-deployment.yml
+                '''
             }
         }
     }
