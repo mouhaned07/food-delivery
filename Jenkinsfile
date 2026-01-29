@@ -17,9 +17,10 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    echo '🐳 Construction de l\'image Docker...'
-                    // Utilisation du chemin absolu pour éviter l'erreur 127
-                    sh "${DOCKER_BIN} build -t ${IMAGE_NAME}:latest ."
+                    // Jenkins va utiliser l'emplacement configuré dans l'interface Tools
+                    def dockerTool = tool name: 'docker', type: 'docker-installer'
+                    withEnv(["PATH+DOCKER=${dockerTool}/bin"]) {
+                    sh 'docker build -t $IMAGE_NAME:latest .'
                 }
             }
         }
