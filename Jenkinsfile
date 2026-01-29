@@ -15,25 +15,20 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    sh '/usr/bin/docker build -t mouhaned07/food-delivery:latest .'
-                    }
-                }
+                echo '🐳 Construction de l\'image...'
+                // Pas besoin de withTool car tu as lancé Jenkins en root avec accès au pipe Docker
+                sh 'docker build -t ${IMAGE_NAME}:latest .'
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                script {
-                    docker.withTool('docker') {
-                        withCredentials([string(credentialsId: 'dockerhub-pass', variable: 'DOCKER_PASS')]) {
-                            echo '📤 Envoi vers Docker Hub...'
-                            sh """
-                            echo ${DOCKER_PASS} | docker login -u mouhaned07 --password-stdin
-                            docker push ${IMAGE_NAME}:latest
-                            """
-                        }
-                    }
+                withCredentials([string(credentialsId: 'dockerhub-pass', variable: 'DOCKER_PASS')]) {
+                    echo '📤 Envoi vers Docker Hub...'
+                    sh """
+                    echo ${DOCKER_PASS} | docker login -u mouhaned07 --password-stdin
+                    docker push ${IMAGE_NAME}:latest
+                    """
                 }
             }
         }
@@ -41,7 +36,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 echo '🚀 Déploiement Kubernetes...'
-                sh 'kubectl apply -f k8s/ || echo "Erreur Kubernetes"'
+                sh 'kubectl apply -f k8s/ || echo "Fichiers k8s manquants"'
             }
         }
     }
