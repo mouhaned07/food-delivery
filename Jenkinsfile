@@ -1,38 +1,45 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = "mouhaned/food-delivery"
+        KUBE_CONFIG = "/root/.kube/config"
+    }
+
     stages {
 
         stage('Checkout') {
             steps {
-                echo '📥 Récupération du code'
-                checkout scm
+                git branch: 'main',
+                    url: 'https://github.com/TON_USER/Food-Delivery-main.git'
             }
         }
 
-        stage('Build Docker Images') {
+        stage('Build Docker Image') {
             steps {
-                echo '🐳 Build des images Docker'
-                sh 'docker compose build'
+                sh 'docker build -t $IMAGE_NAME:latest .'
             }
         }
 
-        stage('Security Scan (Trivy)') {
+        stage('Push Docker Image') {
             steps {
-                echo '🔐 Scan de sécurité Trivy'
-                sh '''
-                trivy image --severity HIGH,CRITICAL frontend || true
-                trivy image --severity HIGH,CRITICAL backend || true
-                '''
+                withCredentials([string(credentialsId: 'dockerhub-pass', variable: 'DOCKER_PASS')]) {
+                    sh '''
+                    echo $DOCKER_PASS | docker login -u TON_USER --password-stdin
+                    docker push $IMAGE_NAME:latest
+                    '''
+                }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                echo '🚀 Déploiement Kubernetes'
-                sh 'kubectl apply -f k8s/'
+                sh '''
+                kubectl apply -f k8s/namespace.yml
+                kubectl apply -f k8s/deployment.yml
+                kubectl apply -f k8s/service.yml
+                '''
             }
         }
     }
 }
-
