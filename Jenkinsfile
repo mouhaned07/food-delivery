@@ -29,23 +29,20 @@ pipeline {
             }
         }
 
-        stage('Login & Push Docker Images') {
+        stage('Connexion et envoi d\'images Docker') {
             steps {
-                echo "🔐 Login DockerHub & Push images..."
+                echo "🔐 Connexion à Docker Hub et envoi d'images..."
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                     sh 'echo "$PASS" | docker login -u "$USER" --password-stdin'
-                    {
-                     retry(3) {
+            
+                    retry(3) { // Réessaie 3 fois en cas d'erreur de "blob" ou réseau
                         sh '''
-                
                             docker push mouhaned07/food-delivery-admin:latest
                             docker push mouhaned07/food-delivery-backend:latest
                             docker push mouhaned07/food-delivery-frontend:latest
-                
-                        
                         '''
-                     }
                     }
+                }
             }
         }
 
