@@ -54,16 +54,12 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                echo "🚀 Déploiement Kubernetes..."
-                sh '''
-                  kubectl apply -f backend-deployment.yml
-                  kubectl apply -f frontend-deployment.yml
-                  kubectl apply -f admin-deployment.yml
-                '''
+                echo "🚀 Déploiement sur Minikube..."
+                withCredentials([file(credentialsId: 'kubeconfig-creds', variable: 'KUBE_CONFIG_PATH')]) {
+                sh "kubectl apply -f k8s/ --kubeconfig=${KUBE_CONFIG_PATH}"
+                }
             }
         }
-    }
-
     post {
         success {
             echo "✅ Pipeline terminé avec succès 🎉"
