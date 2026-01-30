@@ -52,7 +52,23 @@ pipeline {
             }
         }
 
-       
+        stage('Deploy to Kubernetes') {
+            steps {
+                echo "🚀 Déploiement sur Minikube..."
+                withCredentials([file(credentialsId: 'kubeconfig-creds', variable: 'KUBE_CONFIG_PATH')]) {
+                    sh '''
+                        # 1. On crée le namespace SEUL en premier
+                        kubectl apply -f k8s/namespace.yml --kubeconfig=${KUBE_CONFIG_PATH}
+                
+                        # 2. On attend que Kubernetes l'enregistre bien
+                        sleep 5
+                
+                        # 3. On déploie le reste (le flag -f k8s/ va tout prendre)
+                        kubectl apply -f k8s/ --kubeconfig=${KUBE_CONFIG_PATH}
+                    '''
+                }
+            }
+        }
     }
     post {
         success {
