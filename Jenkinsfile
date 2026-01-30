@@ -32,23 +32,20 @@ pipeline {
         stage('Login & Push Docker Images') {
             steps {
                 echo "🔐 Login DockerHub & Push images..."
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'dockerhub-creds',
-                        usernameVariable: 'DOCKER_USERNAME',
-                        passwordVariable: 'DOCKER_PASSWORD'
-                    )
-                ]) {
-                    sh '''
-                        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh 'echo "$PASS" | docker login -u "$USER" --password-stdin'
+                    {
+                     retry(3) {
+                        sh '''
                 
-                        docker push $DOCKER_USER/$ADMIN_IMAGE:latest
-                        docker push $DOCKER_USER/$BACKEND_IMAGE:latest
-                        docker push $DOCKER_USER/$FRONTEND_IMAGE:latest
+                            docker push mouhaned07/food-delivery-admin:latest
+                            docker push mouhaned07/food-delivery-backend:latest
+                            docker push mouhaned07/food-delivery-frontend:latest
                 
-                        docker logout
-                    '''
-                   }
+                        
+                        '''
+                     }
+                    }
             }
         }
 
