@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_USER = "mouhaned07"
+        DOCKER_USER = "mouhane07"
 
         ADMIN_IMAGE    = "food-delivery-admin"
         BACKEND_IMAGE  = "food-delivery-backend"
