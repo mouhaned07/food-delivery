@@ -40,15 +40,13 @@ pipeline {
                         passwordVariable: 'DOCKER_PASSWORD'
                     )
                 ]) {
-                    sh '''
-                      echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-
-                      docker push $DOCKER_USER/$ADMIN_IMAGE:latest
-                      docker push $DOCKER_USER/$BACKEND_IMAGE:latest
-                      docker push $DOCKER_USER/$FRONTEND_IMAGE:latest
-
+                    sh """
+                      echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+                      docker push ${DOCKER_USER}/${ADMIN_IMAGE}:latest
+                      docker push ${DOCKER_USER}/${BACKEND_IMAGE}:latest
+                      docker push ${DOCKER_USER}/${FRONTEND_IMAGE}:latest
                       docker logout
-                    '''
+                    """
                 }
             }
         }
