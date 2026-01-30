@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: admin
-          image: food-delivery-admin:latest
+          image: mouhaned07/food-delivery-admin:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5174

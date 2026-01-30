@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: food-delivery-frontend:latest
+          image: mouhaned07/food-delivery-frontend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5173
